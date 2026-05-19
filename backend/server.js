@@ -1,32 +1,34 @@
-const express = require("express");
-const axios = require("axios");
-require("dotenv").config();
 
-const app = express();
-const PORT = 3001;
-
-const FINNHUB_KEY = process.env.FINNHUB_API_KEY;
-
-// 📡 משיכת נתוני מניה
 async function getStockData(symbol) {
-  const quote = await axios.get(
-    `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`
-  );
+  try {
+    const quote = await axios.get(
+      `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`
+    );
 
-  const profile = await axios.get(
-    `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${FINNHUB_KEY}`
-  );
+    const profile = await axios.get(
+      `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${FINNHUB_KEY}`
+    );
 
-  return {
-    price: quote.data.c,
-    change: quote.data.d,
-    changePercent: quote.data.dp,
-    name: profile.data.name,
-    industry: profile.data.finnhubIndustry
-  };
+    return {
+      price: quote.data.c || 0,
+      change: quote.data.d || 0,
+      changePercent: quote.data.dp || 0,
+      name: profile.data.name || "Unknown",
+      industry: profile.data.finnhubIndustry || "Unknown"
+    };
+
+  } catch (error) {
+    console.error("API ERROR:", error.response?.data || error.message);
+    return {
+      price: 0,
+      change: 0,
+      changePercent: 0,
+      name: "Error fetching data",
+      industry: "Unknown"
+    };
+  }
 }
-
-// 🧠 חישוב ציון ראשוני
+חישוב ציון ראשוני
 function calculateScore(data) {
   let fundamental = 0;
   let technical = 0;
