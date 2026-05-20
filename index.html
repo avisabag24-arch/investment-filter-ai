@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Investment Analyzer</title>
+
   <style>
     body {
       font-family: Arial;
@@ -14,7 +15,9 @@
     input {
       padding: 10px;
       font-size: 18px;
-      width: 200px;
+      width: 220px;
+      border-radius: 6px;
+      border: none;
     }
 
     button {
@@ -23,49 +26,84 @@
       margin-left: 10px;
       background: #22c55e;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
 
-    .result {
+    .card {
       margin-top: 30px;
       padding: 20px;
       background: #1e293b;
-      border-radius: 10px;
+      border-radius: 12px;
       display: inline-block;
+      width: 320px;
+      text-align: left;
+    }
+
+    .score {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .decision {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .section {
+      margin-top: 10px;
+    }
+
+    ul {
+      padding-left: 18px;
     }
   </style>
 </head>
 
 <body>
 
-<h1>📊 Stock Analyzer</h1>
+<h1>📊 Investment Analyzer</h1>
 
-<input id="ticker" placeholder="Enter Ticker (AAPL)" />
+<input id="ticker" placeholder="Enter ticker (AAPL)" />
 <button onclick="analyze()">Analyze</button>
 
-<div class="result" id="result"></div>
+<div class="card" id="result"></div>
 
 <script>
 async function analyze() {
   const ticker = document.getElementById("ticker").value;
-  
+
   const res = await fetch(`/api?ticker=${ticker}`);
   const data = await res.json();
 
   document.getElementById("result").innerHTML = `
     <h2>${data.ticker}</h2>
 
-<p>💰 Price: ${data.stock.price}</p>
-<p>Change: ${data.stock.change}</p>
-<p>Change %: ${data.stock.changePercent}</p>
-<p>${data.stock.name}</p>
-``
+    <div class="score">Score: ${data.score}/10</div>
+    <div class="decision">${data.decision}</div>
 
-    <p>${data.stock.name}</p>
+    <div class="section">
+      <strong>📌 Summary:</strong>
+      <p>${data.summary}</p>
+    </div>
+
+    <div class="section">
+      <strong>✅ Strengths:</strong>
+      <ul>
+        ${data.strengths.map(s => `<li>${s}</li>`).join("")}
+      </ul>
+    </div>
+
+    <div class="section">
+      <strong>⚠️ Risks:</strong>
+      <ul>
+        ${data.risks.map(r => `<li>${r}</li>`).join("")}
+      </ul>
+    </div>
   `;
 }
 </script>
 
 </body>
 </html>
-``
