@@ -6,35 +6,39 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "Ticker required" });
     }
 
-    // 🔥 כאן ה"Claude שלך"
+    const score = Math.floor(Math.random() * 3) + 7;
+
+    const decision = score >= 9
+      ? "BUY ✅"
+      : score >= 7
+      ? "WATCH 🟡"
+      : "REJECT ❌";
+
     const analysis = {
       ticker,
-      score: Math.floor(Math.random() * 3) + 7,
-      decision: Math.random() > 0.5 ? "BUY ✅" : "WATCH 🟡",
+      score,
+      decision,
       summary: `${ticker} operates in a strong market with growth potential but faces competition.`,
 
       categories: {
         business: {
           score: 8,
-          strengths: ["Market leader", "Strong growth"],
+          strengths: ["Strong market position", "Scalable model"],
           risks: ["Competition"]
         },
-
         financials: {
           score: 7,
           strengths: ["Revenue growth", "Healthy margins"],
-          risks: ["Fluctuating profits"]
+          risks: ["Profit variability"]
         },
-
         technical: {
           score: 6,
           strengths: ["Uptrend"],
-          risks: ["High volatility"]
+          risks: ["Volatility"]
         },
-
         risks: {
           score: 5,
-          strengths: ["Diversification"],
+          strengths: ["Diversified base"],
           risks: ["Market pressure"]
         }
       }
@@ -46,3 +50,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: "AI failed" });
   }
 };
+``
