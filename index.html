@@ -54,9 +54,13 @@ async function analyze() {
 
   document.getElementById("result").innerHTML = `
     <h2>${data.ticker}</h2>
-    <p>💰 Price: ${data.stock.price}</p>
-    <p>Change: ${data.stock.change}</p>
-    <p>Change %: ${data.stock.changePercent}</p>
+
+<p>💰 Price: ${data.stock.price}</p>
+<p>Change: ${data.stock.change}</p>
+<p>Change %: ${data.stock.changePercent}</p>
+<p>${data.stock.name}</p>
+``
+
     <p>${data.stock.name}</p>
   `;
 }
