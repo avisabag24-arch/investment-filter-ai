@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Investment Analyzer</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 50px;
+      background: #0f172a;
+      color: white;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 18px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-left: 10px;
+      background: #22c55e;
+      border: none;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      background: #1e293b;
+      border-radius: 10px;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📊 Stock Analyzer</h1>
+
+<input id="ticker" placeholder="Enter Ticker (AAPL)" />
+<button onclick="analyze()">Analyze</button>
+
+<div class="result" id="result"></div>
+
+<script>
+async function analyze() {
+  const ticker = document.getElementById("ticker").value;
+  
+  const res = await fetch(`/api?ticker=${ticker}`);
+  const data = await res.json();
+
+  document.getElementById("result").innerHTML = `
+    <h2>${data.ticker}</h2>
+    <p>💰 Price: ${data.stock.price}</p>
+    <p>Change: ${data.stock.change}</p>
+    <p>Change %: ${data.stock.changePercent}</p>
+    <p>${data.stock.name}</p>
+  `;
+}
+</script>
+
+</body>
+</html>
+``
