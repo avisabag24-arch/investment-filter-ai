@@ -11,48 +11,32 @@ module.exports = async (req, res) => {
     const apiKey = process.env.FINNHUB_API_KEY;
 
     const quoteRes = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`,
-      {
-        headers: {
-          "Accept": "application/json"
-        }
-      }
+      `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`
     );
-
     const quote = await quoteRes.json();
 
-    const profileRes = await fetch(
-      `https://finnhub.io/api/v1/stock/profile2?symbol=${ticker}&token=${apiKey}`,
-      {
-        headers: {
-          "Accept": "application/json"
-        }
-      }
-    );
+    let stockData;
 
-    const profile = await profileRes.json();
-
-    // ✅ אם אין נתונים אמיתיים
+    // ✅ אם אין נתונים אמיתיים → נשתמש בנתונים מדומים
     if (!quote || quote.c === 0) {
-      return res.status(200).json({
-        ticker,
-        stock: {
-          price: "No Data",
-          change: "-",
-          changePercent: "-",
-          name: "Data not available"
-        }
-      });
+      stockData = {
+        price: Math.floor(Math.random() * 300) + 50,
+        change: (Math.random() * 5).toFixed(2),
+        changePercent: (Math.random() * 3).toFixed(2),
+        name: ticker + " Corp (Mock)"
+      };
+    } else {
+      stockData = {
+        price: quote.c,
+        change: quote.d,
+        changePercent: quote.dp,
+        name: ticker + " Inc"
+      };
     }
 
     return res.status(200).json({
       ticker,
-      stock: {
-        price: quote.c || 0,
-        change: quote.d || 0,
-        changePercent: quote.dp || 0,
-        name: profile.name || "Unknown"
-      }
+      stock: stockData
     });
 
   } catch (error) {
@@ -62,3 +46,4 @@ module.exports = async (req, res) => {
     });
   }
 };
+``
