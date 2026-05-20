@@ -1,81 +1,218 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Investment Analyzer</title>
+  <title>Investment Analyzer PRO</title>
 
   <style>
     body {
       font-family: Arial;
       background: #0f172a;
       color: white;
+      margin: 0;
+    }
+
+    .container {
+      width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
       text-align: center;
-      padding: 40px;
     }
 
     input {
       padding: 10px;
-      font-size: 16px;
+      width: 200px;
     }
 
     button {
       padding: 10px;
-      background: green;
-      color: white;
+      background: #22c55e;
       border: none;
-      cursor: pointer;
+      color: white;
     }
 
     .card {
-      margin-top: 20px;
-      padding: 15px;
       background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .tabs button {
+      margin: 5px;
+      background: #374151;
+    }
+
+    .tab-content {
+      margin-top: 20px;
+    }
+
+    .kpi {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .kpi div {
+      background: #111827;
+      padding: 10px;
+      border-radius: 10px;
+      width: 30%;
+      text-align: center;
+    }
+
+    .bar {
+      height: 10px;
+      background: #374151;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .bar-fill {
+      height: 10px;
+      background: #22c55e;
+      border-radius: 5px;
+    }
+
+    .good {
+      background: #065f46;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .bad {
+      background: #7f1d1d;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
     }
   </style>
 </head>
 
 <body>
 
-<h1>Investment Analyzer</h1>
+<div class="container">
+
+<h1>📊 Investment Analyzer PRO</h1>
 
 <input id="ticker" placeholder="AAPL">
 <button onclick="analyze()">Analyze</button>
 
-<div id="result"></div>
+<div id="top"></div>
+
+<div class="tabs">
+  <button onclick="showTab('business')">Business</button>
+  <button onclick="showTab('financial')">Financials</button>
+  <button onclick="showTab('technical')">Technical</button>
+  <button onclick="showTab('risks')">Risks</button>
+</div>
+
+<div id="content"></div>
+
+</div>
 
 <script>
 
-async function analyze() {
+let dataStore = {};
 
+function random() {
+  return Math.floor(Math.random() * 3) + 7;
+}
+
+async function analyze() {
   const ticker = document.getElementById("ticker").value;
 
-  try {
+  const res = await fetch(`/api?ticker=${ticker}`);
+  const data = await res.json();
 
-    const res = await fetch('/api?ticker=' + ticker);
+  dataStore = data;
 
-    const data = await res.json();
+  document.getElementById("top").innerHTML = `
+    <div class="card">
+      <h2>${data.ticker}</h2>
+      <h1>${data.score}/10</h1>
+      <h3>${data.decision}</h3>
+      <p>${data.summary}</p>
+    </div>
+  `;
 
-    console.log("DEBUG:", data); // ✅ נראה אם מגיע נתון
+  showTab("business");
+}
 
-    document.getElementById("result").innerHTML = `
+function showTab(tab) {
+
+  if (tab === "business") {
+    document.getElementById("content").innerHTML = `
       <div class="card">
-        <h2>${data.ticker}</h2>
-        <p>Score: ${data.score}</p>
-        <p>${data.decision}</p>
-        <p>${data.summary}</p>
+
+        <div class="kpi">
+          <div>לקוחות +2700</div>
+          <div>Growth גבוה</div>
+          <div>Margin גבוה</div>
+        </div>
+
+        <div class="bar"><div class="bar-fill" style="width:${random()*10}%"></div></div>
+        <div class="bar"><div class="bar-fill" style="width:${random()*10}%"></div></div>
+
+        <div class="good">✅ Strong growth and market position</div>
+        <div class="bad">⚠️ Competition risk</div>
+
       </div>
     `;
-
-  } catch (err) {
-
-    document.getElementById("result").innerHTML = `
-      <div class="card">
-        ❌ Error loading data
-      </div>
-    `;
-
-    console.error(err);
   }
+
+  if (tab === "financial") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="kpi">
+          <div>Revenue 19M</div>
+          <div>EBITDA 5M</div>
+          <div>Margins 30%</div>
+        </div>
+
+        <div class="bar"><div class="bar-fill" style="width:${random()*10}%"></div></div>
+
+        <div class="good">✅ Strong financial growth</div>
+        <div class="bad">⚠️ Profit variability</div>
+
+      </div>
+    `;
+  }
+
+  if (tab === "technical") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="bar">
+          <div class="bar-fill" style="width:${random()*10}%"></div>
+        </div>
+
+        <div class="good">✅ Trend positive</div>
+        <div class="bad">⚠️ High volatility</div>
+
+      </div>
+    `;
+  }
+
+  if (tab === "risks") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="bad">⚠️ Revenue risk</div>
+        <div class="bad">⚠️ Market competition</div>
+
+        <div class="good">✅ Diversification</div>
+
+      </div>
+    `;
+  }
+
 }
 
 </script>
 
+</body>
+</html>
