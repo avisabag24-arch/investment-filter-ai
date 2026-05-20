@@ -2,24 +2,34 @@ module.exports = async (req, res) => {
   try {
     const { ticker } = req.query;
 
-    // ✅ בדיקה אם הוכנס טיקר
     if (!ticker) {
-      return res.status(400).json({ error: "Ticker is required" });
+      return res.status(400).json({
+        error: "Ticker is required"
+      });
     }
 
-    // ✅ מפתח API
     const apiKey = process.env.FINNHUB_API_KEY;
 
-    // ✅ Fetch מחיר מניה
     const quoteRes = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`
+      `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`,
+      {
+        headers: {
+          "Accept": "application/json"
+        }
+      }
     );
+
     const quote = await quoteRes.json();
 
-    // ✅ Fetch פרטי חברה
     const profileRes = await fetch(
-      `https://finnhub.io/api/v1/stock/profile2?symbol=${ticker}&token=${apiKey}`
+      `https://finnhub.io/api/v1/stock/profile2?symbol=${ticker}&token=${apiKey}`,
+      {
+        headers: {
+          "Accept": "application/json"
+        }
+      }
     );
+
     const profile = await profileRes.json();
 
     // ✅ אם אין נתונים אמיתיים
@@ -35,7 +45,6 @@ module.exports = async (req, res) => {
       });
     }
 
-    // ✅ החזרת נתונים תקינים
     return res.status(200).json({
       ticker,
       stock: {
@@ -47,7 +56,6 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    // ✅ טיפול בשגיאה
     return res.status(500).json({
       error: "API failed",
       details: error.message
