@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Investment Analyzer PRO</title>
+  <title>Investment Analyzer</title>
 
   <style>
     body {
@@ -26,8 +26,8 @@
     }
 
     .card {
-      margin-top: 30px;
-      padding: 20px;
+      margin-top: 20px;
+      padding: 15px;
       background: #1e293b;
     }
   </style>
@@ -43,10 +43,39 @@
 <div id="result"></div>
 
 <script>
+
 async function analyze() {
+
   const ticker = document.getElementById("ticker").value;
 
-  const res = await fetch('/api?ticker=' + ticker);
-  const data = await res.json();
+  try {
 
-  document.getElementById("result").innerHTML = `
+    const res = await fetch('/api?ticker=' + ticker);
+
+    const data = await res.json();
+
+    console.log("DEBUG:", data); // ✅ נראה אם מגיע נתון
+
+    document.getElementById("result").innerHTML = `
+      <div class="card">
+        <h2>${data.ticker}</h2>
+        <p>Score: ${data.score}</p>
+        <p>${data.decision}</p>
+        <p>${data.summary}</p>
+      </div>
+    `;
+
+  } catch (err) {
+
+    document.getElementById("result").innerHTML = `
+      <div class="card">
+        ❌ Error loading data
+      </div>
+    `;
+
+    console.error(err);
+  }
+}
+
+</script>
+
