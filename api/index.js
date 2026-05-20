@@ -1,5 +1,3 @@
-const axios = require("axios");
-
 module.exports = async (req, res) => {
   try {
     const { ticker } = req.query;
@@ -10,21 +8,23 @@ module.exports = async (req, res) => {
 
     const apiKey = process.env.FINNHUB_API_KEY;
 
-    const quote = await axios.get(
+    const quoteRes = await fetch(
       `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`
     );
+    const quote = await quoteRes.json();
 
-    const profile = await axios.get(
+    const profileRes = await fetch(
       `https://finnhub.io/api/v1/stock/profile2?symbol=${ticker}&token=${apiKey}`
     );
+    const profile = await profileRes.json();
 
     return res.status(200).json({
       ticker,
       stock: {
-        price: quote.data.c,
-        change: quote.data.d,
-        changePercent: quote.data.dp,
-        name: profile.data.name
+        price: quote.c,
+        change: quote.d,
+        changePercent: quote.dp,
+        name: profile.name
       }
     });
 
