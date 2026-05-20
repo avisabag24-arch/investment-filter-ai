@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Investment Analyzer</title>
+  <title>Investment Analyzer PRO</title>
 
   <style>
     body {
       font-family: Arial;
-      text-align: center;
-      padding: 50px;
       background: #0f172a;
       color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
     }
 
     input {
-      padding: 10px;
+      padding: 12px;
       font-size: 18px;
       width: 220px;
       border-radius: 6px;
@@ -21,7 +25,7 @@
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 18px;
       font-size: 18px;
       margin-left: 10px;
       background: #22c55e;
@@ -31,79 +35,31 @@
     }
 
     .card {
-      margin-top: 30px;
-      padding: 20px;
+      margin-top: 40px;
+      padding: 30px;
       background: #1e293b;
-      border-radius: 12px;
-      display: inline-block;
-      width: 320px;
+      border-radius: 16px;
+      width: 420px;
+      margin-left: auto;
+      margin-right: auto;
       text-align: left;
     }
 
-    .score {
-      font-size: 28px;
+    .score-box {
+      font-size: 36px;
       font-weight: bold;
-      margin-bottom: 10px;
     }
 
     .decision {
       font-size: 20px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
-    .section {
+    .bar-container {
       margin-top: 10px;
     }
 
-    ul {
-      padding-left: 18px;
+    .bar-label {
+      font-size: 14px;
     }
-  </style>
-</head>
 
-<body>
-
-<h1>📊 Investment Analyzer</h1>
-
-<input id="ticker" placeholder="Enter ticker (AAPL)" />
-<button onclick="analyze()">Analyze</button>
-
-<div class="card" id="result"></div>
-
-<script>
-async function analyze() {
-  const ticker = document.getElementById("ticker").value;
-
-  const res = await fetch(`/api?ticker=${ticker}`);
-  const data = await res.json();
-
-  document.getElementById("result").innerHTML = `
-    <h2>${data.ticker}</h2>
-
-    <div class="score">Score: ${data.score}/10</div>
-    <div class="decision">${data.decision}</div>
-
-    <div class="section">
-      <strong>📌 Summary:</strong>
-      <p>${data.summary}</p>
-    </div>
-
-    <div class="section">
-      <strong>✅ Strengths:</strong>
-      <ul>
-        ${data.strengths.map(s => `<li>${s}</li>`).join("")}
-      </ul>
-    </div>
-
-    <div class="section">
-      <strong>⚠️ Risks:</strong>
-      <ul>
-        ${data.risks.map(r => `<li>${r}</li>`).join("")}
-      </ul>
-    </div>
-  `;
-}
-</script>
-
-</body>
-</html>
