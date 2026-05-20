@@ -19,44 +19,40 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 30px;
     }
 
-    .search-box {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+    .search {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     input {
-      padding: 12px;
+      padding: 10px;
       width: 250px;
       border-radius: 8px;
       border: none;
     }
 
     button {
-      padding: 12px 20px;
-      background: #22c55e;
-      border: none;
-      color: white;
+      padding: 10px 20px;
+      margin-left: 10px;
       border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: white;
       cursor: pointer;
-      font-weight: bold;
     }
 
     .card {
       background: #1e293b;
       border-radius: 18px;
-      padding: 25px;
-      margin-top: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      padding: 20px;
+      margin-top: 20px;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
     }
 
     .score {
@@ -65,49 +61,43 @@
     }
 
     .decision {
-      font-size: 18px;
       padding: 6px 12px;
       border-radius: 10px;
     }
 
-    .buy { background: #065f46; }
-    .watch { background: #78350f; }
+    .buy { background: green; }
+    .watch { background: orange; }
 
-    .kpis {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .kpi {
-      flex: 1;
-      background: #0f172a;
-      padding: 10px;
-      text-align: center;
-      border-radius: 10px;
-    }
-
+    /* ✅ טאבים */
     .tabs {
       margin-top: 20px;
     }
 
     .tabs button {
       background: #334155;
-      margin-right: 8px;
+      margin-right: 5px;
     }
 
-    .bars {
-      margin-top: 20px;
+    .tabs button.active {
+      background: #22c55e;
+    }
+
+    .kpis {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .kpi {
+      flex: 1;
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
     }
 
     .bar {
-      margin-bottom: 10px;
-    }
-
-    .bar-title {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
+      margin-top: 10px;
     }
 
     .bar-bg {
@@ -124,14 +114,14 @@
 
     .good {
       background: #065f46;
-      padding: 12px;
+      padding: 10px;
       border-radius: 10px;
-      margin-top: 15px;
+      margin-top: 10px;
     }
 
     .bad {
       background: #7f1d1d;
-      padding: 12px;
+      padding: 10px;
       border-radius: 10px;
       margin-top: 10px;
     }
@@ -144,16 +134,27 @@
 
 <h1>📊 Investment Analyzer PRO</h1>
 
-<div class="search-box">
-  <input id="ticker" placeholder="Enter Ticker (AAPL)">
+<div class="search">
+  <input id="ticker" placeholder="AAPL">
   <button onclick="analyze()">Analyze</button>
 </div>
 
-<div id="result"></div>
+<div id="top"></div>
+
+<div class="tabs">
+  <button onclick="showTab('business')">Business</button>
+  <button onclick="showTab('financial')">Financials</button>
+  <button onclick="showTab('technical')">Technical</button>
+  <button onclick="showTab('risks')">Risks</button>
+</div>
+
+<div id="content"></div>
 
 </div>
 
 <script>
+
+let dataStore = {};
 
 function rand() {
   return Math.floor(Math.random() * 4) + 6;
@@ -166,60 +167,101 @@ async function analyze() {
   const res = await fetch(`/api?ticker=${ticker}`);
   const data = await res.json();
 
-  const business = rand();
-  const financial = rand();
-  const technical = rand();
-  const valuation = rand();
+  dataStore = data;
 
-  document.getElementById("result").innerHTML = `
-
-    <div class="card">
-
-      <div class="header">
-        <div>
-          <h2>${data.ticker}</h2>
-          <p>${data.summary}</p>
-        </div>
-        <div>
-          <div class="score">${data.score}/10</div>
-          <div class="decision ${data.decision.includes("BUY") ? "buy" : "watch"}">
-            ${data.decision}
-          </div>
+  document.getElementById("top").innerHTML = `
+    <div class="card header">
+      <div>
+        <h2>${data.ticker}</h2>
+        <p>${data.summary}</p>
+      </div>
+      <div>
+        <div class="score">${data.score}/10</div>
+        <div class="decision ${data.decision.includes("BUY") ? "buy" : "watch"}">
+          ${data.decision}
         </div>
       </div>
-
-      <div class="kpis">
-        <div class="kpi">Growth<br><b>${business}/10</b></div>
-        <div class="kpi">Financials<br><b>${financial}/10</b></div>
-        <div class="kpi">Technical<br><b>${technical}/10</b></div>
-      </div>
-
-      <div class="bars">
-        ${bar("Business", business)}
-        ${bar("Financials", financial)}
-        ${bar("Technical", technical)}
-        ${bar("Valuation", valuation)}
-      </div>
-
-      <div class="good">
-        ✅ Strong growth and market leadership
-      </div>
-
-      <div class="bad">
-        ⚠️ Competition and valuation risks
-      </div>
-
     </div>
   `;
+
+  showTab("business");
+}
+
+function showTab(tab) {
+
+  if (tab === "business") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="kpis">
+          <div class="kpi">לקוחות<br>2700+</div>
+          <div class="kpi">Growth<br>גבוה</div>
+          <div class="kpi">Margin<br>גבוה</div>
+        </div>
+
+        ${bar("Business", rand())}
+        ${bar("Market Position", rand())}
+
+        <div class="good">✅ Strong growth and market leadership</div>
+        <div class="bad">⚠️ Competition risk</div>
+
+      </div>
+    `;
+  }
+
+  if (tab === "financial") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="kpis">
+          <div class="kpi">Revenue<br>$19M</div>
+          <div class="kpi">EBITDA<br>$5M</div>
+          <div class="kpi">Growth<br>18%</div>
+        </div>
+
+        ${bar("Revenue Growth", rand())}
+        ${bar("Profitability", rand())}
+
+        <div class="good">✅ Strong financial growth</div>
+        <div class="bad">⚠️ Profit risk</div>
+
+      </div>
+    `;
+  }
+
+  if (tab === "technical") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        ${bar("Trend", rand())}
+        ${bar("Momentum", rand())}
+
+        <div class="good">✅ Bullish trend</div>
+        <div class="bad">⚠️ High volatility</div>
+
+      </div>
+    `;
+  }
+
+  if (tab === "risks") {
+    document.getElementById("content").innerHTML = `
+      <div class="card">
+
+        <div class="bad">⚠️ Revenue concentration</div>
+        <div class="bad">⚠️ Competition risk</div>
+
+        <div class="good">✅ Diversified customer base</div>
+
+      </div>
+    `;
+  }
+
 }
 
 function bar(title, val) {
   return `
     <div class="bar">
-      <div class="bar-title">
-        <span>${title}</span>
-        <span>${val}/10</span>
-      </div>
+      <div>${title} (${val}/10)</div>
       <div class="bar-bg">
         <div class="bar-fill" style="width:${val*10}%"></div>
       </div>
