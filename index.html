@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Investment Analyzer PRO</title>
+  <title>Investment Analyzer</title>
 
   <style>
     body {
@@ -17,15 +17,6 @@
       padding: 30px;
     }
 
-    h1 {
-      text-align: center;
-    }
-
-    .search {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
     input {
       padding: 10px;
       width: 250px;
@@ -35,65 +26,27 @@
 
     button {
       padding: 10px 20px;
-      margin-left: 10px;
-      border-radius: 8px;
       border: none;
       background: #22c55e;
       color: white;
+      border-radius: 8px;
       cursor: pointer;
     }
 
     .card {
       background: #1e293b;
-      border-radius: 18px;
+      margin-top: 20px;
       padding: 20px;
-      margin-top: 20px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .score {
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    .decision {
-      padding: 6px 12px;
-      border-radius: 10px;
-    }
-
-    .buy { background: green; }
-    .watch { background: orange; }
-
-    /* ✅ טאבים */
-    .tabs {
-      margin-top: 20px;
+      border-radius: 12px;
     }
 
     .tabs button {
+      margin: 5px;
       background: #334155;
-      margin-right: 5px;
     }
 
     .tabs button.active {
       background: #22c55e;
-    }
-
-    .kpis {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .kpi {
-      flex: 1;
-      background: #0f172a;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
     }
 
     .bar {
@@ -115,14 +68,14 @@
     .good {
       background: #065f46;
       padding: 10px;
-      border-radius: 10px;
+      border-radius: 8px;
       margin-top: 10px;
     }
 
     .bad {
       background: #7f1d1d;
       padding: 10px;
-      border-radius: 10px;
+      border-radius: 8px;
       margin-top: 10px;
     }
   </style>
@@ -132,18 +85,16 @@
 
 <div class="container">
 
-<h1>📊 Investment Analyzer PRO</h1>
+<h2>Investment Analyzer</h2>
 
-<div class="search">
-  <input id="ticker" placeholder="AAPL">
-  <button onclick="analyze()">Analyze</button>
-</div>
+<input id="ticker" placeholder="AAPL">
+<button onclick="analyze()">Analyze</button>
 
 <div id="top"></div>
 
 <div class="tabs">
   <button onclick="showTab('business')">Business</button>
-  <button onclick="showTab('financial')">Financials</button>
+  <button onclick="showTab('financials')">Financials</button>
   <button onclick="showTab('technical')">Technical</button>
   <button onclick="showTab('risks')">Risks</button>
 </div>
@@ -154,33 +105,23 @@
 
 <script>
 
-let dataStore = {};
-
-function rand() {
-  return Math.floor(Math.random() * 4) + 6;
-}
+let DATA = {};
 
 async function analyze() {
 
   const ticker = document.getElementById("ticker").value;
 
-  const res = await fetch(`/api?ticker=${ticker}`);
+  const res = await fetch(`/api/ai?ticker=${ticker}`);
   const data = await res.json();
 
-  dataStore = data;
+  DATA = data;
 
   document.getElementById("top").innerHTML = `
-    <div class="card header">
-      <div>
-        <h2>${data.ticker}</h2>
-        <p>${data.summary}</p>
-      </div>
-      <div>
-        <div class="score">${data.score}/10</div>
-        <div class="decision ${data.decision.includes("BUY") ? "buy" : "watch"}">
-          ${data.decision}
-        </div>
-      </div>
+    <div class="card">
+      <h2>${data.ticker}</h2>
+      <h1>${data.score}/10</h1>
+      <h3>${data.decision}</h3>
+      <p>${data.summary}</p>
     </div>
   `;
 
@@ -189,79 +130,30 @@ async function analyze() {
 
 function showTab(tab) {
 
-  if (tab === "business") {
-    document.getElementById("content").innerHTML = `
-      <div class="card">
+  const c = DATA.categories[tab];
 
-        <div class="kpis">
-          <div class="kpi">לקוחות<br>2700+</div>
-          <div class="kpi">Growth<br>גבוה</div>
-          <div class="kpi">Margin<br>גבוה</div>
-        </div>
+  document.getElementById("content").innerHTML = `
+    <div class="card">
+      <h3>${tab.toUpperCase()} (${c.score}/10)</h3>
 
-        ${bar("Business", rand())}
-        ${bar("Market Position", rand())}
+      ${bar("Score", c.score)}
 
-        <div class="good">✅ Strong growth and market leadership</div>
-        <div class="bad">⚠️ Competition risk</div>
-
+      <div class="good">
+        ✅ ${c.strengths.join(", ")}
       </div>
-    `;
-  }
 
-  if (tab === "financial") {
-    document.getElementById("content").innerHTML = `
-      <div class="card">
-
-        <div class="kpis">
-          <div class="kpi">Revenue<br>$19M</div>
-          <div class="kpi">EBITDA<br>$5M</div>
-          <div class="kpi">Growth<br>18%</div>
-        </div>
-
-        ${bar("Revenue Growth", rand())}
-        ${bar("Profitability", rand())}
-
-        <div class="good">✅ Strong financial growth</div>
-        <div class="bad">⚠️ Profit risk</div>
-
+      <div class="bad">
+        ⚠️ ${c.risks.join(", ")}
       </div>
-    `;
-  }
 
-  if (tab === "technical") {
-    document.getElementById("content").innerHTML = `
-      <div class="card">
-
-        ${bar("Trend", rand())}
-        ${bar("Momentum", rand())}
-
-        <div class="good">✅ Bullish trend</div>
-        <div class="bad">⚠️ High volatility</div>
-
-      </div>
-    `;
-  }
-
-  if (tab === "risks") {
-    document.getElementById("content").innerHTML = `
-      <div class="card">
-
-        <div class="bad">⚠️ Revenue concentration</div>
-        <div class="bad">⚠️ Competition risk</div>
-
-        <div class="good">✅ Diversified customer base</div>
-
-      </div>
-    `;
-  }
-
+    </div>
+  `;
 }
 
-function bar(title, val) {
+function bar(label, val) {
   return `
     <div class="bar">
-      <div>${title} (${val}/10)</div>
+      <div>${label}</div>
       <div class="bar-bg">
         <div class="bar-fill" style="width:${val*10}%"></div>
       </div>
