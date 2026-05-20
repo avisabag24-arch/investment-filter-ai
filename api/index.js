@@ -18,15 +18,16 @@ module.exports = async (req, res) => {
     );
     const profile = await profileRes.json();
 
-    return res.status(200).json({
-      ticker,
-      stock: {
-        price: quote.c,
-        change: quote.d,
-        changePercent: quote.dp,
-        name: profile.name
-      }
-    });
+
+return res.status(200).json({
+  ticker,
+  stock: {
+    price: quote.c || 0,
+    change: quote.d || 0,
+    changePercent: quote.dp || 0,
+    name: profile.name || "Unknown"
+  }
+});
 
   } catch (error) {
     return res.status(500).json({
